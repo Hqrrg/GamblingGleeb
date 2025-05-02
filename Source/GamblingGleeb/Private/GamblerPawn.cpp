@@ -55,14 +55,24 @@ void AGamblerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	{
 		// Interact
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &AGamblerPawn::Interact);
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &AGamblerPawn::Interact);
 	}
 }
 
 // Interact input event
 void AGamblerPawn::Interact(const FInputActionValue& Value)
 {
+	const bool Pressed = Value.Get<bool>();
+
+	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("%s"), Pressed ? TEXT("True") : TEXT("False")));
+	
 	if (AGamblerController* GamblerController = Cast<AGamblerController>(Controller))
 	{
+		GamblerController->GetLeftMouseButtonDown() = Pressed;
+		GamblerController->UpdateCrosshairTexture(GamblerController->GetCurrentCrosshairType());
+
+		if  (!Pressed) return;
+		
 		if (AActor* Hovered = GamblerController->GetHovered())
 		{
 			// Implements instead of cast for blueprint compatability

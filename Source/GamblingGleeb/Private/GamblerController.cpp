@@ -9,8 +9,12 @@ AGamblerController::AGamblerController()
 {
 	PreviousMousePosition = FVector2D::ZeroVector;
 	Hovered = nullptr;
+	LeftMouseButtonDown = false;
 
-	CrosshairTextures = TMap<ECrosshairType, UTexture2D*>();
+	HoverCrosshairTextures = TMap<ECrosshairType, UTexture2D*>();
+	ClickCrosshairTextures = TMap<ECrosshairType, UTexture2D*>();
+
+	CurrentCrosshairType = ECrosshairType::Default;
 }
 
 void AGamblerController::BeginPlay()
@@ -47,10 +51,15 @@ bool AGamblerController::LineTraceFromMouse(FHitResult& HitResult, float TraceDi
 	UWorld* World = GetWorld();
 	if (!World) return false;
 	
-	FVector TraceStart, TraceDirection;
-	if (DeprojectMousePositionToWorld(TraceStart, TraceDirection)) return false;
+	float MouseX, MouseY; GetMousePosition(MouseX, MouseY);
 	
-	FVector TraceEnd = TraceStart + TraceDirection * TraceDistance;
+	FRotator CameraRotation = PlayerCameraManager->GetCameraRotation();
+	FVector CameraDirection = CameraRotation.Vector().GetSafeNormal();
+	
+	FVector TraceStart;
+	DeprojectScreenPositionToWorld(MouseX, MouseY, TraceStart, CameraDirection);
+	
+	FVector TraceEnd = TraceStart + CameraDirection * TraceDistance;
 	
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(this);
@@ -59,24 +68,43 @@ bool AGamblerController::LineTraceFromMouse(FHitResult& HitResult, float TraceDi
 	{
 		QueryParams.AddIgnoredActor(ControlledPawn);
 	}
+
+	DrawDebugLine(World, TraceStart, TraceEnd, FColor::Red, true, -1, 0, 10.f);
 	
 	return World->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, QueryParams);;
 }
 
-UTexture2D* AGamblerController::GetCrosshairTexture(const ECrosshairType Type)
+UTexture2D* AGamblerController::GetClickCrosshairTexture(const ECrosshairType Type)
 {
 	UTexture2D* CrosshairTexture = nullptr;
-	if (CrosshairTextures.Contains(Type))
+	if (ClickCrosshairTextures.Contains(Type))
 	{
-		CrosshairTexture = *CrosshairTextures.Find(Type);
+		CrosshairTexture = *ClickCrosshairTextures.Find(Type);
+	}
+	return CrosshairTexture;
+}
+
+UTexture2D* AGamblerController::GetHoverCrosshairTexture(const ECrosshairType Type)
+{
+	UTexture2D* CrosshairTexture = nullptr;
+	if (HoverCrosshairTextures.Contains(Type))
+	{
+		CrosshairTexture = *HoverCrosshairTextures.Find(Type);
 	}
 	return CrosshairTexture;
 }
 
 void AGamblerController::UpdateCrosshairTexture(ECrosshairType Type)
 {
+	CurrentCrosshairType = Type;
+	UTexture2D* CrosshairTexture = GetHoverCrosshairTexture(Type);
+	
+	if (GetLeftMouseButtonDown())
+	{
+		CrosshairTexture = GetClickCrosshairTexture(Type);
+	}
 	// Ensure texture is valid
-	if (UTexture2D* CrosshairTexture = GetCrosshairTexture(Type))
+	if (CrosshairTexture)
 	{
 		// Broadcast crosshair updated
 		OnCrosshairTextureUpdated.Broadcast(CrosshairTexture);

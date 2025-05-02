@@ -32,16 +32,25 @@ public:
 	bool LineTraceFromMouse(UPARAM(ref) FHitResult& HitResult, float TraceDistance);
 
 	UFUNCTION(BlueprintPure)
-	UTexture2D* GetCrosshairTexture(const ECrosshairType Type);
+	UTexture2D* GetHoverCrosshairTexture(const ECrosshairType Type);
+
+	UFUNCTION(BlueprintPure)
+	UTexture2D* GetClickCrosshairTexture(const ECrosshairType Type);
 
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE AActor* GetHovered() { return Hovered; }
+
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE ECrosshairType GetCurrentCrosshairType() const { return CurrentCrosshairType; }
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateCrosshairTexture(ECrosshairType Type);
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateMousePosition();
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE bool& GetLeftMouseButtonDown() { return LeftMouseButtonDown; }
 
 	UPROPERTY(BlueprintAssignable)
 	FCrosshairTextureUpdated OnCrosshairTextureUpdated;
@@ -51,10 +60,17 @@ public:
 
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	TMap<ECrosshairType, UTexture2D*> CrosshairTextures;
+	TMap<ECrosshairType, UTexture2D*> HoverCrosshairTextures;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TMap<ECrosshairType, UTexture2D*> ClickCrosshairTextures;
 
 	FVector2D PreviousMousePosition;
 
 	UPROPERTY()
 	AActor* Hovered;
+	
+	bool LeftMouseButtonDown = false;
+
+	ECrosshairType CurrentCrosshairType;
 };
