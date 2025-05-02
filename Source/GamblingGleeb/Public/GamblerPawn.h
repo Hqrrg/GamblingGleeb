@@ -13,6 +13,9 @@ class GAMBLINGGLEEB_API AGamblerPawn : public APawn
 {
 	GENERATED_BODY()
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Root, meta = (AllowPrivateAccess = "true"))
+	class UBoxComponent* CollisionComponent;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Appearance, meta = (AllowPrivateAccess = "true"))
 	class UPaperFlipbookComponent* FlipbookComponent;
 	

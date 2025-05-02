@@ -9,6 +9,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GamblerController.h"
+#include "Components/BoxComponent.h"
 #include "Interfaces/ClickableInterface.h"
 
 
@@ -18,8 +19,11 @@ AGamblerPawn::AGamblerPawn()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	CollisionComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
+	RootComponent = CollisionComponent;
+	
 	FlipbookComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook"));
-	RootComponent = FlipbookComponent;
+	FlipbookComponent->SetupAttachment(RootComponent);
 
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArmComponent->SetupAttachment(RootComponent);
