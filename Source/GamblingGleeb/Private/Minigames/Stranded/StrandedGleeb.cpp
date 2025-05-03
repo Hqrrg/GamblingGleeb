@@ -75,7 +75,7 @@ void AStrandedGleeb::Tick(float DeltaTime)
 // Called when clicked
 void AStrandedGleeb::Clicked_Implementation(APlayerController* Player)
 {
-	
+	OnShot.Broadcast();
 }
 
 void AStrandedGleeb::GetCrosshairType_Implementation(ECrosshairType& Type)

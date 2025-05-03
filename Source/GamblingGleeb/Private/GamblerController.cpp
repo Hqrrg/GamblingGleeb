@@ -35,13 +35,6 @@ void AGamblerController::Tick(float DeltaTime)
 		if (AActor* HitActor = Hit.GetActor(); HitActor != Hovered)
 		{
 			Hovered = HitActor;
-			ECrosshairType CrosshairType = ECrosshairType::Default;
-			
-			if (Hovered->Implements<UClickableInterface>())
-			{
-				IClickableInterface::Execute_GetCrosshairType(Hovered, CrosshairType);
-			}
-			UpdateCrosshairTexture(CrosshairType);
 		}
 	}
 }
@@ -68,8 +61,6 @@ bool AGamblerController::LineTraceFromMouse(FHitResult& HitResult, float TraceDi
 	{
 		QueryParams.AddIgnoredActor(ControlledPawn);
 	}
-
-	DrawDebugLine(World, TraceStart, TraceEnd, FColor::Red, true, -1, 0, 10.f);
 	
 	return World->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, QueryParams);;
 }

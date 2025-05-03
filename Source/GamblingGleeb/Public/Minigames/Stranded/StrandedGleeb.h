@@ -7,6 +7,8 @@
 #include "Interfaces/ClickableInterface.h"
 #include "StrandedGleeb.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FShot);
+
 UCLASS()
 class GAMBLINGGLEEB_API AStrandedGleeb : public AActor, public IClickableInterface
 {
@@ -34,6 +36,9 @@ public:
 	virtual void Clicked_Implementation(APlayerController* Player) override;
 
 	virtual void GetCrosshairType_Implementation(ECrosshairType& Type) override;
+
+	UPROPERTY(BlueprintAssignable)
+	FShot OnShot;
 
 	// Bounding box (for movement)
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = Defaults, meta = (ExposeOnSpawn))
