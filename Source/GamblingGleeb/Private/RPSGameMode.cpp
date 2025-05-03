@@ -18,6 +18,7 @@ ARPSGameMode::ARPSGameMode()
 	ParticipantManager = nullptr;
 	MinigameManager = nullptr;
 	CameraManager = nullptr;
+	GamblerControllerRef = nullptr;
 }
 
 void ARPSGameMode::BeginPlay()
@@ -36,6 +37,8 @@ void ARPSGameMode::BeginPlay()
 			AMinigameManager* FoundMinigameManager = Cast<AMinigameManager>(FoundActor);
 			MinigameManager = FoundMinigameManager;
 		}
+		
+		OnManagersLoaded.Broadcast();
 	}
 }
 

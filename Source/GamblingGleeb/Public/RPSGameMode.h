@@ -12,6 +12,10 @@ class AGamblerController;
 class AMinigameManager;
 class ACameraManager;
 class AParticipantManager;
+
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FManagersLoaded);
+
 /**
  * 
  */
@@ -55,6 +59,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, meta = (ExpandBoolAsExecs = "bExecs"))
 	AGamblerController* GetGamblerController(bool& bExecs);
+
+	UPROPERTY(BlueprintAssignable)
+	FManagersLoaded OnManagersLoaded;
 
 private:
 	EHand ComputerHand;
