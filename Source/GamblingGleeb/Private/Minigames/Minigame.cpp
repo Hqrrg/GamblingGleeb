@@ -16,25 +16,29 @@ AMinigame::AMinigame()
 
 void AMinigame::Begin()
 {
+	// Don't begin if already active
 	if (Active) return;
 	
 	UWorld* World = GetWorld();
 	if (!World) return;
 
+	// Start timer to call End()
 	MinigameTimerDelegate.BindUFunction(this, FName("End"));
 	World->GetTimerManager().SetTimer(MinigameTimerHandle, MinigameTimerDelegate, Duration, false);
 
+	// Set active
 	Active = true;
 }
 
 void AMinigame::End()
 {
 	OnMinigameEnd.Broadcast(Win);
-
+	// Reset vars
 	Active = false;
 	Win = false;
 }
 
+// Get the time remaining on the minigame timer
 float AMinigame::GetTimeRemaining()
 {
 	UWorld* World = GetWorld();

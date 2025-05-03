@@ -21,6 +21,7 @@ void AStrandedMinigame::Begin()
 {
 	Super::Begin();
 
+	// Don't begin if there's no bounding box for gleeb
 	if (!BoundingBox) return;
 
 	UWorld* World = GetWorld();
@@ -30,6 +31,7 @@ void AStrandedMinigame::Begin()
 	
 	StrandedGleeb = World->SpawnActorDeferred<AStrandedGleeb>(StrandedGleebClass, SpawnTransform);
 
+	// Spawn gleeb, set bounding box & bind OnShot delegate
 	if (StrandedGleeb)
 	{
 		StrandedGleeb->BoundingBox = BoundingBox;
@@ -43,11 +45,13 @@ void AStrandedMinigame::End()
 {
 	Super::End();
 
+	// Destroy gleeb when the minigame is over
 	if (StrandedGleeb) StrandedGleeb->Destroy();
 }
 
 void AStrandedMinigame::ShotGleeb()
 {
+		// Player wins
 		SetWon(true);
 		End();
 }
