@@ -7,8 +7,8 @@
 UENUM(BlueprintType)
 enum class EHand : uint8
 {
-	None,
 	Rock,
 	Paper,
-	Scissors
+	Scissors,
+	None
 };

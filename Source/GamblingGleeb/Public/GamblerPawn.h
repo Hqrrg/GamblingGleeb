@@ -44,4 +44,7 @@ protected:
 
 	// Interact input event
 	void Interact(const FInputActionValue& Value);
+
+private:
+	bool InteractKeyDown;
 };

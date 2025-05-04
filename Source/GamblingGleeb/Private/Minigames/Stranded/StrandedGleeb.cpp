@@ -34,8 +34,28 @@ void AStrandedGleeb::BeginPlay()
 
 	if (BoundingBox)
 	{
+		FVector2D UpperBounds, LowerBounds;
+		BoundingBox->CalculateBounds(UpperBounds, LowerBounds);
+
+		constexpr float Buffer = 50.0f;
+
+		// Random position within bounding box
+		const float X = FMath::RandRange(LowerBounds.X+Buffer, UpperBounds.X-Buffer);
+		const float Y = FMath::RandRange(LowerBounds.Y+Buffer, UpperBounds.Y-Buffer);
+		const FVector SpawnLoc = FVector(BoundingBox->GetActorLocation().X, X, Y);
+
+		// Random movement direction
+		const float MoveDirX = FMath::RoundToInt(FMath::RandRange(0.f, 1.f)) * 2 - 1;
+		const float MoveDirY = FMath::RoundToInt(FMath::RandRange(0.f, 1.f)) * 2 - 1;
+		MovementDirection = FVector2D(MoveDirX, MoveDirY);
+
+		// Random speed
+		RandomizeVelocity();
+
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("%s"), *MovementDirection.ToString()));
+		
 		// Teleport within bounding box
-		SetActorLocation(BoundingBox->GetActorLocation());
+		SetActorLocation(SpawnLoc);
 	}
 }
 
@@ -58,9 +78,18 @@ void AStrandedGleeb::Tick(float DeltaTime)
 		const FVector2D ActorBounds2D = FVector2D(Extent.Y, Extent.Z);
 
 		// If actor is bordering or exceeding bounding box horizontally then invert horizontal direction
-		if (ActorLocation2D.X + ActorBounds2D.X >= UpperBounds.X || ActorLocation2D.X - ActorBounds2D.X  <= LowerBounds.X) MovementDirection.X = -MovementDirection.X;
+		if (ActorLocation2D.X + ActorBounds2D.X >= UpperBounds.X || ActorLocation2D.X - ActorBounds2D.X  <= LowerBounds.X)
+		{
+			MovementDirection.X = -MovementDirection.X;
+			RandomizeVelocity();
+		}
+		
 		// If actor is bordering or exceeding bounding box vertically then invert vertical direction
-		if (ActorLocation2D.Y + ActorBounds2D.Y >= UpperBounds.Y || ActorLocation2D.Y - ActorBounds2D.Y <= LowerBounds.Y) MovementDirection.Y = -MovementDirection.Y;
+		if (ActorLocation2D.Y + ActorBounds2D.Y >= UpperBounds.Y || ActorLocation2D.Y - ActorBounds2D.Y <= LowerBounds.Y)
+		{
+			MovementDirection.Y = -MovementDirection.Y;
+			RandomizeVelocity();
+		}
 
 		// Target location without depth dimension (X)
 		const FVector2D TargetLocation2D = ActorLocation2D + Velocity * MovementDirection * DeltaTime;
@@ -81,4 +110,11 @@ void AStrandedGleeb::Clicked_Implementation(APlayerController* Player)
 void AStrandedGleeb::GetCrosshairType_Implementation(ECrosshairType& Type)
 {
 	Type = ECrosshairType::Crosshair;
+}
+
+void AStrandedGleeb::RandomizeVelocity()
+{
+	const float VelocityX = FMath::RandRange(VelocityBoundsX.X, VelocityBoundsX.Y);
+	const float VelocityY = FMath::RandRange(VelocityBoundsY.X, VelocityBoundsY.Y);
+	Velocity = FVector2D(VelocityX, VelocityY);
 }

@@ -45,11 +45,18 @@ public:
 	class AScreenBoundingBox* BoundingBox = nullptr;
 	
 private:
+	void RandomizeVelocity();
+	
 	// Normalized movement vector
 	FVector2D MovementDirection;
 
 	// Absolute velocity
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Defaults, meta = (AllowPrivateAccess = "true"))
+	FVector2D VelocityBoundsX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Defaults, meta = (AllowPrivateAccess = "true"))
+	FVector2D VelocityBoundsY;
+	
 	FVector2D Velocity;
 
 	// Move condition

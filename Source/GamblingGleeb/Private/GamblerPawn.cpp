@@ -30,6 +30,8 @@ AGamblerPawn::AGamblerPawn()
 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	CameraComponent->SetupAttachment(SpringArmComponent);
+
+	InteractKeyDown = false;
 }
 
 // Called when the game starts or when spawned
@@ -61,14 +63,14 @@ void AGamblerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 // Interact input event
 void AGamblerPawn::Interact(const FInputActionValue& Value)
 {
-	const bool Pressed = Value.Get<bool>();
+	InteractKeyDown=!InteractKeyDown;
 	
 	if (AGamblerController* GamblerController = Cast<AGamblerController>(Controller))
 	{
-		GamblerController->GetLeftMouseButtonDown() = Pressed;
+		GamblerController->GetLeftMouseButtonDown() = InteractKeyDown;
 		GamblerController->UpdateCrosshairTexture(GamblerController->GetCurrentCrosshairType());
 
-		if  (!Pressed) return;
+		if  (!InteractKeyDown) return;
 		
 		if (AActor* Hovered = GamblerController->GetHovered())
 		{
