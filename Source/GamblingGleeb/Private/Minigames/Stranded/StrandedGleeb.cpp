@@ -51,8 +51,6 @@ void AStrandedGleeb::BeginPlay()
 
 		// Random speed
 		RandomizeVelocity();
-
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("%s"), *MovementDirection.ToString()));
 		
 		// Teleport within bounding box
 		SetActorLocation(SpawnLoc);
